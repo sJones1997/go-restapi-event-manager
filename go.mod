@@ -1,4 +1,5 @@
-module example.com/rest-api
+module github.com/sJones1997/go-restapi-event-manager
+
 
 go 1.22.2
 
