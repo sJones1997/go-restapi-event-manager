@@ -3,6 +3,9 @@ SRC_DIR := .
 BIN_DIR := ./bin
 BINARY_NAME := go-restapi-event-manager
 
+run:
+	go run cmd/go-restapi-event-manager/main.go
+
 # Build target
 build:
 	go build -o $(BIN_DIR)/$(BINARY_NAME) $(SRC_DIR)/cmd/$(BINARY_NAME)/main.go

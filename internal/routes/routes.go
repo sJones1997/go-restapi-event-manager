@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sJones1997/go-restapi-event-manager/internal/models"
+	"github.com/sJones1997/go-restapi-event-manager/internal/models/events"
 	"net/http"
 )
 
@@ -16,12 +16,12 @@ func NewServer() *gin.Engine {
 }
 
 func getEvents(c *gin.Context) {
-	events := models.GetAllEvents()
+	events := events.GetAllEvents()
 	c.JSON(http.StatusOK, events)
 }
 
 func createEvent(c *gin.Context) {
-	event := models.Event{}
+	event := events.Event{}
 
 	if err := c.ShouldBindJSON(&event); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
