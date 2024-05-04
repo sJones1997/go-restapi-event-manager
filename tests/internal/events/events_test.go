@@ -21,7 +21,7 @@ func TestCreateEvent(t *testing.T) {
 		Name:        "test",
 		Description: "test description",
 		Location:    "test location",
-		DateTime:    time.Now(),
+		CreatedAt:   time.Now(),
 	}
 
 	payload, _ := json.Marshal(event)

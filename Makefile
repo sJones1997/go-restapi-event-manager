@@ -16,4 +16,7 @@ clean:
 	$(GO_CLEAN)
 	rm -rf $(BIN_DIR)
 
+test:
+	go test ./tests/internal/...
+
 .PHONY: build clean

@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/sJones1997/go-restapi-event-manager/db"
 	"github.com/sJones1997/go-restapi-event-manager/internal/events"
 )
 
 const port = ":8080"
 
 func main() {
+	db.InitDB()
 	server := events.NewServer()
 	err := server.Run(port)
 	if err != nil {
