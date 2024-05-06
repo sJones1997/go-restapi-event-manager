@@ -1,8 +1,12 @@
 package events
 
 import (
+	"database/sql"
+	"errors"
 	"github.com/sJones1997/go-restapi-event-manager/db"
+	"github.com/sJones1997/go-restapi-event-manager/internal/utils/HTTPError"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -52,6 +56,11 @@ func GetEvent(eventId int64) (Event, error) {
 
 	err := db.CONN.QueryRow(query, eventId).Scan(&event.ID, &event.Name, &event.Description, &event.Location, &event.CreatedAt, &event.UserID)
 	if err != nil {
+
+		if errors.Is(err, sql.ErrNoRows) {
+			return Event{}, HTTPError.New(http.StatusNotFound, "Event not found")
+		}
+
 		return Event{}, err
 	}
 
@@ -89,6 +98,24 @@ func GetAllEvents() ([]Event, error) {
 
 func DeleteEvent(eventId int64) error {
 
+	_, err := GetEvent(eventId)
+	if err != nil {
+		return err
+	}
+
 	query := `DELETE FROM events WHERE id = ?`
+
+	stmt, err := db.CONN.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(eventId)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }

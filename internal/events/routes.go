@@ -1,7 +1,9 @@
 package events
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/sJones1997/go-restapi-event-manager/internal/utils/HTTPError"
 	"net/http"
 	"strconv"
 )
@@ -12,6 +14,7 @@ func NewServer() *gin.Engine {
 	server.GET("/events", getEvents)
 	server.GET("/event/:id", getEvent)
 	server.POST("/events", createEvent)
+	server.DELETE("/event/:id", deleteEvent)
 
 	return server
 }
@@ -29,10 +32,19 @@ func getEvent(c *gin.Context) {
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	event, err := GetEvent(id)
+
+	var httpErr *HTTPError.HTTPError
+	if errors.As(err, &httpErr) {
+		c.JSON(httpErr.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, event)
 }
@@ -62,5 +74,20 @@ func deleteEvent(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+
+	err = DeleteEvent(id)
+
+	var httpErr *HTTPError.HTTPError
+	if errors.As(err, &httpErr) {
+		c.JSON(httpErr.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Event deleted!"})
 
 }
