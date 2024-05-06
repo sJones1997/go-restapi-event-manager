@@ -11,12 +11,12 @@ import (
 )
 
 type Event struct {
-	ID          int
-	Name        string `binding:"required"`
-	Description string `binding:"required"`
-	Location    string `binding:"required"`
-	CreatedAt   time.Time
-	UserID      int
+	ID          int       `json:"id"`
+	Name        string    `binding:"required" json:"name"`
+	Description string    `binding:"required" json:"description"`
+	Location    string    `binding:"required" json:"location"`
+	CreatedAt   time.Time `json:"created_at"`
+	UserID      int       `json:"user_id"`
 }
 
 func (e *Event) Save() (Event, error) {
@@ -118,4 +118,32 @@ func DeleteEvent(eventId int64) error {
 
 	return nil
 
+}
+
+func UpdateEvent(event Event) (Event, error) {
+
+	eventId64 := int64(event.ID)
+
+	_, err := GetEvent(eventId64)
+	if err != nil {
+		return Event{}, err
+	}
+
+	query := `
+		UPDATE events 
+		SET name = ?, description = ?, location = ?, user_id = ?
+		WHERE events.id = ?
+		`
+
+	stmt, err := db.CONN.Prepare(query)
+	if err != nil {
+		return Event{}, err
+	}
+
+	_, err = stmt.Exec(&event.Name, &event.Description, &event.Location, &event.UserID, eventId64)
+	if err != nil {
+		return Event{}, err
+	}
+
+	return event, nil
 }

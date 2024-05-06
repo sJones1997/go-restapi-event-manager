@@ -15,6 +15,7 @@ func NewServer() *gin.Engine {
 	server.GET("/event/:id", getEvent)
 	server.POST("/events", createEvent)
 	server.DELETE("/event/:id", deleteEvent)
+	server.PUT("/event/:id", updateEvent)
 
 	return server
 }
@@ -38,7 +39,7 @@ func getEvent(c *gin.Context) {
 
 	var httpErr *HTTPError.HTTPError
 	if errors.As(err, &httpErr) {
-		c.JSON(httpErr.StatusCode, gin.H{"error": err.Error()})
+		c.JSON(httpErr.StatusCode, gin.H{"error": httpErr.Error()})
 		return
 	}
 
@@ -79,7 +80,7 @@ func deleteEvent(c *gin.Context) {
 
 	var httpErr *HTTPError.HTTPError
 	if errors.As(err, &httpErr) {
-		c.JSON(httpErr.StatusCode, gin.H{"error": err.Error()})
+		c.JSON(httpErr.StatusCode, gin.H{"error": httpErr.Error()})
 		return
 	}
 
@@ -89,5 +90,31 @@ func deleteEvent(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Event deleted!"})
+
+}
+
+func updateEvent(c *gin.Context) {
+
+	event := Event{}
+
+	if err := c.ShouldBindJSON(&event); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	event, err := UpdateEvent(event)
+
+	var httpErr *HTTPError.HTTPError
+	if errors.As(err, &httpErr) {
+		c.JSON(httpErr.StatusCode, gin.H{"error": httpErr.Error()})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "event updated", "event": event})
 
 }

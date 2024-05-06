@@ -4,7 +4,7 @@ BIN_DIR := ./bin
 BINARY_NAME := go-restapi-event-manager
 
 run:
-	go run cmd/go-restapi-event-manager/main.go
+	go run cmd/$(BINARY_NAME)/main.go
 
 # Build target
 build:

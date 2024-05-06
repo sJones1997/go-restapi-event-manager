@@ -1,8 +1,8 @@
 package HTTPError
 
 type HTTPError struct {
-	Message    string `json:"message"`
-	StatusCode int    `json:"status_code"`
+	Message    string
+	StatusCode int
 }
 
 func (e *HTTPError) Error() string {
